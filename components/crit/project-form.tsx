@@ -1,50 +1,73 @@
 "use client";
 
 /**
- * [1부 버전] 작업 올리기 폼 — 입력과 동시에 오른쪽 카드 미리보기가 갱신됩니다.
- * "제어 컴포넌트(controlled component)" 패턴: 입력값을 state가 소유합니다.
- * 2부에서 action={formAction} 으로 서버에 저장하도록 바뀝니다.
+ * [2부 버전] 작업 올리기 폼
+ *  - 미리보기를 위해 입력값은 계속 state로 관리(1부와 동일)
+ *  - 제출은 action={formAction} → 서버의 createProject 가 FormData 를 받음
+ *  - 썸네일은 <input type="file">, 미리보기는 URL.createObjectURL
  */
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useActionState, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ProjectCard } from "./project-card";
+import { FieldError, FormMessage } from "./form-message";
+import { SubmitButton } from "./submit-button";
+import { createProject } from "@/lib/actions/projects";
+import { initialState } from "@/lib/actions/state";
 import { cn } from "@/lib/utils";
-import { STAGE_LABEL, type Stage } from "@/lib/types";
+import { STAGE_LABEL, type Profile, type Stage } from "@/lib/types";
 
-export function ProjectForm() {
+export function ProjectForm({ author }: { author: Profile }) {
+  const [state, formAction] = useActionState(createProject, initialState);
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
   const [tagsText, setTagsText] = useState("");
   const [stage, setStage] = useState<Stage>("wip");
-  const [submitted, setSubmitted] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  // 미리보기 URL은 메모리를 잡아먹으므로 바뀌거나 사라질 때 해제
+  useEffect(() => () => { if (previewUrl) URL.revokeObjectURL(previewUrl); }, [previewUrl]);
 
   const tags = tagsText.split(",").map((t) => t.trim()).filter(Boolean).slice(0, 5);
-
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setSubmitted(true); // 1부: 저장 대신 확인 메시지만
-  }
+  const err = state.fieldErrors ?? {};
 
   return (
     <div className="grid items-start gap-10 lg:grid-cols-[1fr_22rem]">
-      <form onSubmit={handleSubmit} className="grid gap-6">
+      <form action={formAction} className="grid gap-6">
         <div className="grid gap-2">
           <Label htmlFor="title">제목</Label>
-          <Input id="title" name="title" required maxLength={60} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="예: 동네 서점 예약 앱 — 홈 화면" />
+          <Input id="title" name="title" required maxLength={60} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="예: 동네 서점 예약 앱 — 홈 화면" aria-invalid={!!err.title} aria-describedby="title-error" />
+          <FieldError id="title-error" errors={err.title} />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="summary">받고 싶은 피드백</Label>
-          <Textarea id="summary" name="summary" required maxLength={300} value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="어떤 부분을 봐주면 좋을지 적어주세요." />
-          <p className="text-right text-xs text-muted-foreground">{summary.length}/300</p>
+          <Textarea id="summary" name="summary" required maxLength={300} value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="어떤 부분을 봐주면 좋을지 적어주세요." aria-invalid={!!err.summary} aria-describedby="summary-error" />
+          <div className="flex justify-between">
+            <FieldError id="summary-error" errors={err.summary} />
+            <p className="ml-auto text-xs text-muted-foreground">{summary.length}/300</p>
+          </div>
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="image_url">썸네일 이미지 URL</Label>
-          <Input id="image_url" name="image_url" type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://…" />
-          <p className="text-xs text-muted-foreground">2부에서 파일 업로드(Supabase Storage)로 바뀝니다.</p>
+          <Label htmlFor="image">썸네일 이미지</Label>
+          <Input
+            id="image"
+            name="image"
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            className="file:mr-3 file:rounded-sm file:border-0 file:bg-secondary file:px-2 file:text-secondary-foreground"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              setPreviewUrl(f ? URL.createObjectURL(f) : null);
+            }}
+            aria-describedby="image-error"
+          />
+          <FieldError id="image-error" errors={err.image} />
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="figma_url">Figma 링크 (선택)</Label>
+          <Input id="figma_url" name="figma_url" type="url" placeholder="https://www.figma.com/design/…" aria-describedby="figma-error" />
+          <FieldError id="figma-error" errors={err.figma_url} />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="tags">태그</Label>
@@ -61,10 +84,10 @@ export function ProjectForm() {
             ))}
           </div>
         </fieldset>
-        <div className="flex items-center gap-3">
-          <Button type="submit" size="lg">작업 올리기</Button>
-          {submitted && <p role="status" className="text-sm text-muted-foreground">입력 확인 완료. 실제 저장은 2부에서 연결합니다.</p>}
-        </div>
+        <FormMessage ok={state.ok} message={state.message} />
+        <SubmitButton size="lg" pendingText="올리는 중…" className="w-fit">
+          작업 올리기
+        </SubmitButton>
       </form>
 
       <aside className="grid gap-3 lg:sticky lg:top-24">
@@ -72,13 +95,10 @@ export function ProjectForm() {
         <ProjectCard
           preview
           project={{
-            title,
-            summary,
-            image_url: imageUrl || null,
-            tags,
-            stage,
+            title, summary, tags, stage,
+            image_url: previewUrl,
             created_at: new Date().toISOString(),
-            author: { id: "me", display_name: "나", role_title: null, avatar_url: null },
+            author,
             feedback_count: 0,
           }}
         />

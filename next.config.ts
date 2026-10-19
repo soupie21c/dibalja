@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "*.supabase.co" },
     ],
   },
+  // Server Action 요청 본문 기본 한도(1MB) → 썸네일 5MB까지 받도록
+  experimental: { serverActions: { bodySizeLimit: "5mb" } },
   turbopack: {
     rules: {
       "*.css": {
