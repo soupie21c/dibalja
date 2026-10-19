@@ -1,12 +1,17 @@
+"use client";
+
+import { Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { UserAvatar } from "./user-avatar";
 import { timeAgo } from "@/lib/utils";
+import { deleteFeedback } from "@/lib/actions/feedback";
 import { KIND_LABEL, type FeedbackWithAuthor } from "@/lib/types";
 
 const kindVariant = { praise: "final", suggestion: "wip", question: "review" } as const;
 
-/** 피드백 목록 — 순서가 의미 있으므로 번호 핀을 붙입니다. */
-export function FeedbackList({ items }: { items: FeedbackWithAuthor[] }) {
+/** [2부 버전] 본인이 쓴 피드백에는 삭제 버튼이 붙습니다. */
+export function FeedbackList({ items, currentUserId }: { items: FeedbackWithAuthor[]; currentUserId?: string }) {
   if (items.length === 0) {
     return <p className="text-sm text-muted-foreground">아직 피드백이 없습니다. 첫 의견을 남겨주세요.</p>;
   }
@@ -25,6 +30,14 @@ export function FeedbackList({ items }: { items: FeedbackWithAuthor[] }) {
               <time className="text-muted-foreground" dateTime={f.created_at} suppressHydrationWarning>
                 {timeAgo(f.created_at)}
               </time>
+              {currentUserId === f.author_id && (
+                // bind 로 인자를 미리 채운 Server Action
+                <form action={deleteFeedback.bind(null, f.id, f.project_id)} className="ml-auto">
+                  <Button type="submit" variant="ghost" size="icon" className="size-7" aria-label="내 피드백 삭제">
+                    <Trash2 />
+                  </Button>
+                </form>
+              )}
             </div>
             <p className="whitespace-pre-line text-[0.95rem] leading-relaxed">{f.body}</p>
           </div>

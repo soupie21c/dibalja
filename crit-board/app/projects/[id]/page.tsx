@@ -4,18 +4,28 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { DeleteProjectButton } from "@/components/crit/delete-project-button";
 import { FeedbackSection } from "@/components/crit/feedback-section";
 import { StageBadge } from "@/components/crit/stage-badge";
 import { UserAvatar } from "@/components/crit/user-avatar";
+import { getCurrentUser } from "@/lib/auth";
 import { getProject } from "@/lib/data";
 import { timeAgo } from "@/lib/utils";
 
 type Props = { params: Promise<{ id: string }> };
 
-export default async function ProjectPage({ params }: Props) {
+export async function generateMetadata({ params }: Props) {
   const { id } = await params;
   const project = await getProject(id);
-  if (!project) notFound(); // → app/not-found.tsx
+  return { title: project ? `${project.title} — Crit Board` : "Crit Board" };
+}
+
+export default async function ProjectPage({ params }: Props) {
+  const { id } = await params;
+  // 두 요청을 동시에 — 순차 대기(waterfall) 방지
+  const [project, user] = await Promise.all([getProject(id), getCurrentUser()]);
+  if (!project) notFound();
+  const isOwner = user?.id === project.author_id;
 
   return (
     <article className="grid gap-10 lg:grid-cols-[1fr_24rem]">
@@ -24,8 +34,10 @@ export default async function ProjectPage({ params }: Props) {
           <Link href="/"><ArrowLeft /> 피드로</Link>
         </Button>
         <div className="relative aspect-[4/3] overflow-hidden rounded-xl border bg-muted">
-          {project.image_url && (
+          {project.image_url ? (
             <Image src={project.image_url} alt={`${project.title} 화면`} fill priority sizes="(min-width: 1024px) 66vw, 100vw" className="object-cover" />
+          ) : (
+            <div className="flex h-full items-center justify-center text-muted-foreground">썸네일 없음</div>
           )}
         </div>
       </div>
@@ -41,14 +53,17 @@ export default async function ProjectPage({ params }: Props) {
             <time className="ml-auto text-muted-foreground" dateTime={project.created_at}>{timeAgo(project.created_at)}</time>
           </div>
           <p className="leading-relaxed">{project.summary}</p>
-          {project.figma_url && (
-            <Button asChild variant="outline" size="sm" className="w-fit">
-              <a href={project.figma_url} target="_blank" rel="noreferrer">Figma에서 보기 <ExternalLink /></a>
-            </Button>
-          )}
+          <div className="flex flex-wrap gap-2">
+            {project.figma_url && (
+              <Button asChild variant="outline" size="sm">
+                <a href={project.figma_url} target="_blank" rel="noreferrer">Figma에서 보기 <ExternalLink /></a>
+              </Button>
+            )}
+            {isOwner && <DeleteProjectButton projectId={project.id} />}
+          </div>
         </header>
         <Separator />
-        <FeedbackSection projectId={project.id} initial={project.feedback} />
+        <FeedbackSection projectId={project.id} items={project.feedback} currentUser={user} />
       </div>
     </article>
   );
