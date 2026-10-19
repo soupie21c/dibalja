@@ -14,6 +14,7 @@
 |---|---|
 | `notes/` | 공부하면서 정리한 노트 |
 | `practice/` | 직접 만들어 본 실습 코드 |
+| `crit-board/` | full-stack-designer 1부 실습 — Figma 디자인 시스템을 Next.js + shadcn/ui로 옮긴 디자인 크리틱 보드 |
 
 ## 공부 로드맵
 
@@ -21,11 +22,20 @@
 - [ ] HTML 기초
 - [ ] CSS 기초 (레이아웃, Flexbox, Grid)
 - [ ] JavaScript 기초
-- [ ] Figma 디자인을 코드로 옮기기
-- [ ] React 맛보기
+- [x] Figma 디자인을 코드로 옮기기 (Figma MCP → 디자인 토큰 → 컴포넌트 → 페이지)
+- [x] React 맛보기 (Next.js 16 App Router)
 
 ## 공부 기록
 
 | 날짜 | 한 일 |
 |---|---|
 | 2026-10-16 | SSH 키 만들고 GitHub 연결, 저장소 만들기 |
+| 2026-10-19 | crit-board 1부 프론트엔드 실습 02~07 완료 (Figma MCP 연결, 토큰, shadcn 컴포넌트, 페이지, Visual QA) |
+
+## crit-board 실행하기
+
+```bash
+cd crit-board
+npm install
+npm run dev      # http://localhost:3000
+```
