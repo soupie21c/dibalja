@@ -11,6 +11,19 @@ Figma MCP로 디자인을 가져와 코드로 옮길 때 아래 규칙을 반드
 - `Foundations` 페이지: `Foundations / Light`(node 3:2), `Foundations / Dark`(node 3:128)
 - 변수 컬렉션 `Crit / Tokens` (Light / Dark 모드). 각 변수에 코드 이름(`var(--primary)` 등)이 지정되어 있습니다.
 
+### Figma 컴포넌트 ↔ 코드 대응표 (Code Connect 대신)
+Figma Code Connect는 Organization/Enterprise 요금제에서만 쓸 수 있어, 이 표로 대신합니다.
+Figma 노드를 받으면 아래 파일을 먼저 열어 재사용하세요.
+
+| Figma 컴포넌트 (node) | Variant 속성 | 코드 |
+|---|---|---|
+| Button (3:302) | Type, Size | `components/ui/button.tsx` — `variant`, `size` |
+| Badge (3:317) | Type (WIP/Review/Final 포함) | `components/ui/badge.tsx` — `variant` / 단계는 `components/crit/stage-badge.tsx` |
+| Field (41:91) | Type = Input / Textarea | `components/ui/label.tsx` + `input.tsx` / `textarea.tsx` |
+| Avatar (47:9) | Size = SM / MD / LG | `components/crit/user-avatar.tsx` — `size` |
+| ProjectCard (4:2) | — | `components/crit/project-card.tsx` |
+| Screens: Feed (5:2) · Work Detail (26:67) · Upload (41:92) | — | `app/page.tsx` · `app/projects/[id]/page.tsx` · `app/projects/new/page.tsx` |
+
 ## 스택
 - Next.js 16 (App Router, TypeScript), React 19
 - Tailwind CSS v4 (설정 파일 없음 — 토큰은 `app/globals.css`의 `@theme inline`)

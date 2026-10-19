@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Noto_Sans_KR } from "next/font/google";
 import { SiteHeader } from "@/components/crit/site-header";
+import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
 // Figma 파일과 같은 글꼴(Noto Sans KR) — globals.css 의 --font-sans 가 이 변수를 먼저 사용
@@ -22,7 +23,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" className={`${notoSansKr.variable} ${geistMono.variable}`}>
+    // suppressHydrationWarning: 초기화 스크립트가 서버 렌더 뒤에 "dark" 클래스를 붙이기 때문
+    <html lang="ko" className={`${notoSansKr.variable} ${geistMono.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="min-h-dvh">
         <SiteHeader />
         <main className="mx-auto max-w-[67.5rem] px-5 py-12">{children}</main>

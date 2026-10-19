@@ -19,7 +19,7 @@ export function FeedbackList({ items }: { items: FeedbackWithAuthor[] }) {
           </span>
           <div className="grid gap-1.5">
             <div className="flex flex-wrap items-center gap-2 text-sm">
-              <UserAvatar user={f.author} className="size-6" />
+              <UserAvatar user={f.author} size="sm" />
               <span className="font-medium">{f.author.display_name}</span>
               <Badge variant={kindVariant[f.kind]}>{KIND_LABEL[f.kind]}</Badge>
               <time className="text-muted-foreground" dateTime={f.created_at} suppressHydrationWarning>

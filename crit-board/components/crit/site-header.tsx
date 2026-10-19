@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "./theme-toggle";
 
 /** [1부 버전] 헤더 — 2부에서 로그인 상태에 따라 메뉴가 바뀝니다. */
 export function SiteHeader() {
@@ -14,9 +15,12 @@ export function SiteHeader() {
           <Link href="/" className="hover:text-foreground">피드</Link>
           <Link href="/design-system" className="hover:text-foreground">디자인 시스템</Link>
         </nav>
-        <Button asChild size="sm" className="ml-auto">
-          <Link href="/projects/new">작업 올리기</Link>
-        </Button>
+        <div className="ml-auto flex items-center gap-2">
+          <ThemeToggle />
+          <Button asChild size="sm">
+            <Link href="/projects/new">작업 올리기</Link>
+          </Button>
+        </div>
       </div>
     </header>
   );
