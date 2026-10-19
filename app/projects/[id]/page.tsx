@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { FeedbackSection } from "@/components/crit/feedback-section";
 import { StageBadge } from "@/components/crit/stage-badge";
 import { UserAvatar } from "@/components/crit/user-avatar";
+import { getCurrentUser } from "@/lib/auth";
 import { getProject } from "@/lib/data";
 import { timeAgo } from "@/lib/utils";
 
@@ -14,7 +15,8 @@ type Props = { params: Promise<{ id: string }> };
 
 export default async function ProjectPage({ params }: Props) {
   const { id } = await params;
-  const project = await getProject(id);
+  // 두 요청을 동시에 — 순차 대기(waterfall) 방지
+  const [project, user] = await Promise.all([getProject(id), getCurrentUser()]);
   if (!project) notFound(); // → app/not-found.tsx
 
   return (
@@ -48,7 +50,7 @@ export default async function ProjectPage({ params }: Props) {
           )}
         </header>
         <Separator />
-        <FeedbackSection projectId={project.id} initial={project.feedback} />
+        <FeedbackSection projectId={project.id} items={project.feedback} currentUser={user} />
       </div>
     </article>
   );
