@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { DeleteProjectButton } from "@/components/crit/delete-project-button";
 import { FeedbackSection } from "@/components/crit/feedback-section";
+import { LikeButton } from "@/components/crit/like-button";
 import { StageBadge } from "@/components/crit/stage-badge";
 import { UserAvatar } from "@/components/crit/user-avatar";
 import { getCurrentUser } from "@/lib/auth";
-import { getProject } from "@/lib/data";
+import { getLikes, getProject } from "@/lib/data";
 import { timeAgo } from "@/lib/utils";
 
 type Props = { params: Promise<{ id: string }> };
@@ -22,8 +23,8 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function ProjectPage({ params }: Props) {
   const { id } = await params;
-  // 두 요청을 동시에 — 순차 대기(waterfall) 방지
-  const [project, user] = await Promise.all([getProject(id), getCurrentUser()]);
+  // 세 요청을 동시에 — 순차 대기(waterfall) 방지
+  const [project, user, likes] = await Promise.all([getProject(id), getCurrentUser(), getLikes(id)]);
   if (!project) notFound();
   const isOwner = user?.id === project.author_id;
 
@@ -54,6 +55,7 @@ export default async function ProjectPage({ params }: Props) {
           </div>
           <p className="leading-relaxed">{project.summary}</p>
           <div className="flex flex-wrap gap-2">
+            <LikeButton projectId={project.id} count={likes.count} liked={likes.liked} signedIn={!!user} />
             {project.figma_url && (
               <Button asChild variant="outline" size="sm">
                 <a href={project.figma_url} target="_blank" rel="noreferrer">Figma에서 보기 <ExternalLink /></a>

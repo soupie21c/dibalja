@@ -24,10 +24,14 @@ export async function SiteHeader() {
           <ThemeToggle />
           {user ? (
             <>
-              <span className="hidden items-center gap-2 text-sm sm:flex">
+              <Link
+                href="/settings"
+                aria-label={`${user.display_name} — 프로필 설정`}
+                className="flex items-center gap-2 rounded-md text-sm outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              >
                 <UserAvatar user={user} />
-                {user.display_name}
-              </span>
+                <span className="hidden sm:inline">{user.display_name}</span>
+              </Link>
               {/* Server Action 을 form action 으로 — JS 없이도 동작 */}
               <form action={signOut}>
                 <Button type="submit" variant="ghost" size="sm">로그아웃</Button>

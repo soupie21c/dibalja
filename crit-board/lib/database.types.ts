@@ -94,6 +94,35 @@ export type Database = {
           },
         ];
       };
+      reactions: {
+        Row: {
+          project_id: string;
+          user_id: string;
+          created_at: string;
+        };
+        Insert: {
+          project_id: string;
+          user_id: string;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["reactions"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "reactions_project_id_fkey";
+            columns: ["project_id"];
+            isOneToOne: false;
+            referencedRelation: "projects";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reactions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: { [_ in never]: never };
     Functions: { [_ in never]: never };

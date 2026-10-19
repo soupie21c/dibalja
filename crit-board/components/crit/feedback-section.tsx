@@ -5,8 +5,9 @@
  *  - action={formAction}: 제출하면 서버의 addFeedback 실행
  *  - SubmitButton(useFormStatus): 전송 중 스피너 + 비활성화
  *  - 성공 후 서버가 revalidatePath → 새 목록이 props(items)로 다시 내려옵니다.
+ *  - [과제 3] 다른 사람의 피드백은 Realtime 구독으로 바로 반영됩니다.
  */
-import { useActionState, useState } from "react";
+import { useActionState, useMemo, useState } from "react";
 import Link from "next/link";
 import { Textarea } from "@/components/ui/textarea";
 import { FeedbackList } from "./feedback-list";
@@ -15,6 +16,7 @@ import { FieldError, FormMessage } from "./form-message";
 import { SubmitButton } from "./submit-button";
 import { addFeedback } from "@/lib/actions/feedback";
 import { initialState } from "@/lib/actions/state";
+import { useFeedbackRealtime } from "@/lib/realtime";
 import type { FeedbackKind, FeedbackWithAuthor, Profile } from "@/lib/types";
 
 export function FeedbackSection({
@@ -28,6 +30,10 @@ export function FeedbackSection({
 }) {
   const [state, formAction] = useActionState(addFeedback, initialState);
   const [kind, setKind] = useState<FeedbackKind>("suggestion");
+
+  // [과제 3] 다른 사람이 남기거나 지운 피드백을 새로고침 없이 반영 (구독은 lib/realtime.ts)
+  const itemIds = useMemo(() => items.map((f) => f.id), [items]);
+  useFeedbackRealtime(projectId, itemIds);
 
   return (
     <section aria-labelledby="feedback-heading" className="grid gap-6">
