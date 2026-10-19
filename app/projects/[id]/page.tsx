@@ -35,7 +35,7 @@ export default async function ProjectPage({ params }: Props) {
           <StageBadge stage={project.stage} />
           <h1 className="text-2xl font-bold leading-snug tracking-tight">{project.title}</h1>
           <div className="flex items-center gap-2 text-sm">
-            <UserAvatar user={project.author} />
+            <UserAvatar user={project.author} size="sm" />
             <span className="font-medium">{project.author.display_name}</span>
             {project.author.role_title && <span className="text-muted-foreground">{project.author.role_title}</span>}
             <time className="ml-auto text-muted-foreground" dateTime={project.created_at}>{timeAgo(project.created_at)}</time>
