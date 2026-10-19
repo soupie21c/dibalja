@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Noto_Sans_KR } from "next/font/google";
+import { SiteHeader } from "@/components/crit/site-header";
 import "./globals.css";
-import { cn } from "@/lib/utils";
 
-// Figma 파일과 같은 글꼴 — globals.css 의 --font-sans 가 이 변수를 먼저 사용
+// Figma 파일과 같은 글꼴(Noto Sans KR) — globals.css 의 --font-sans 가 이 변수를 먼저 사용
 const notoSansKr = Noto_Sans_KR({
   variable: "--font-noto-sans-kr",
   subsets: ["latin"],
@@ -16,14 +16,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Crit Board",
-  description: "완성 전에 보여주고, 동료의 피드백을 받는 디자인 크리틱 보드",
+  title: "Crit Board — 디자인 크리틱 보드",
+  description: "작업 중인 화면을 올리고 동료의 피드백을 받는 곳",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" className={cn("h-full", notoSansKr.variable, geistMono.variable)}>
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="ko" className={`${notoSansKr.variable} ${geistMono.variable}`}>
+      <body className="min-h-dvh">
+        <SiteHeader />
+        <main className="mx-auto max-w-6xl px-5 py-10">{children}</main>
+      </body>
     </html>
   );
 }
