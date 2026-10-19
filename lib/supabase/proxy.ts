@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 /** 로그인해야만 들어갈 수 있는 경로 */
-const PROTECTED = ["/projects/new"];
+const PROTECTED = ["/projects/new", "/settings"];
 
 /**
  * 모든 요청의 "입구"에서 실행: 만료된 인증 토큰을 갱신해 쿠키에 다시 씁니다.
