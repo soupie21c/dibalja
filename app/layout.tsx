@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ko" className={`${notoSansKr.variable} ${geistMono.variable}`}>
       <body className="min-h-dvh">
         <SiteHeader />
-        <main className="mx-auto max-w-6xl px-5 py-10">{children}</main>
+        <main className="mx-auto max-w-[67.5rem] px-5 py-12">{children}</main>
       </body>
     </html>
   );

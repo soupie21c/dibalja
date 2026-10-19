@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-20 border-b bg-background/85 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-5">
+      <div className="mx-auto flex h-16 max-w-[67.5rem] items-center gap-6 px-5">
         <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">
           <span className="pin size-5 bg-highlight" aria-hidden />
           Crit Board

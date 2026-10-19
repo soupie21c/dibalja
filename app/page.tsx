@@ -19,7 +19,7 @@ export default async function HomePage({ searchParams }: Props) {
           <br />
           동료들이 코멘트를 해줍니다.
         </h1>
-        <p className="max-w-xl text-lg leading-relaxed text-muted-foreground">
+        <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">
           작업 중인 화면을 올리고, 좋은 점·제안·질문으로 나뉜 구체적인 피드백을 받으세요.
         </p>
       </section>

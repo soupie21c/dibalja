@@ -167,7 +167,7 @@ export default function DesignSystemPage() {
 
           <Sub title="레이아웃 & 브레이크포인트">
             <p className="text-sm text-muted-foreground">
-              콘텐츠 최대 폭 1152px(max-w-6xl), 좌우 여백 20px(px-5). 모바일 퍼스트: 접두사 없는 클래스가 기본이고, 접두사는 그 폭 이상에서만 적용됩니다.
+              콘텐츠 폭 1040px(Figma 기준 — max-w-[67.5rem] 안에 좌우 여백 20px(px-5)). 모바일 퍼스트: 접두사 없는 클래스가 기본이고, 접두사는 그 폭 이상에서만 적용됩니다.
             </p>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

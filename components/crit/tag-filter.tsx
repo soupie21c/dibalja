@@ -12,7 +12,7 @@ export function TagFilter({ tags, active }: { tags: string[]; active?: string })
         href={href}
         aria-current={on ? "page" : undefined}
         className={cn(
-          "inline-flex h-8 items-center rounded-full border px-3.5 text-sm transition-colors",
+          "inline-flex h-8 items-center rounded-full border px-3.5 text-sm font-medium transition-colors",
           on ? "border-foreground bg-foreground text-background" : "bg-card hover:bg-muted"
         )}
       >
